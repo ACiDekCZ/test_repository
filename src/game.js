@@ -1,7 +1,8 @@
 import Obstacle from './objects/Obstacle';
 
 const GRAVITY = 0.5;
-const JUMP_VELOCITY = 8;
+// Increased jump velocity so the player can clear all obstacles.
+const JUMP_VELOCITY = 12;
 const JUMP_COOLDOWN = 250; // milliseconds
 const OBSTACLE_SPEED = 3;
 const OBSTACLE_MIN_HEIGHT = 20;
@@ -10,7 +11,8 @@ const OBSTACLE_MIN_GAP = 1500;
 const OBSTACLE_MAX_GAP = 3000;
 const DOG_WIDTH = 50;
 const DOG_HEIGHT = 50;
-const PLAYER_COLOR = '#0000ff';
+// Brighter player color for a more modern look.
+const PLAYER_COLOR = '#ff4500';
 
 export function startGame() {
   const canvas = document.getElementById('gameCanvas');
