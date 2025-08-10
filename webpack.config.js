@@ -21,6 +21,10 @@ module.exports = {
           filename: 'assets/[name][ext]',
         },
       },
+      {
+        test: /\.base64$/,
+        type: 'asset/source',
+      },
     ],
   },
   plugins: [
