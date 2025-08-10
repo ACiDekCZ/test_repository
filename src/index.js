@@ -1,4 +1,7 @@
 import { startGame } from './game';
+import { preloadAssets } from './preload';
 
 console.log('Game initialized');
-startGame();
+preloadAssets().then((assets) => {
+  startGame(assets);
+});
