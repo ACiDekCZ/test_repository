@@ -1,4 +1,3 @@
-import dogSpriteBase64 from '../assets/images/dog_sprite.base64';
 import Obstacle from './objects/Obstacle';
 
 const GRAVITY = 0.5;
@@ -11,6 +10,7 @@ const OBSTACLE_MIN_GAP = 1500;
 const OBSTACLE_MAX_GAP = 3000;
 const DOG_WIDTH = 50;
 const DOG_HEIGHT = 50;
+const PLAYER_COLOR = '#0000ff';
 
 export function startGame() {
   const canvas = document.getElementById('gameCanvas');
@@ -24,8 +24,9 @@ export function startGame() {
   window.addEventListener('orientationchange', resizeCanvas);
   resizeCanvas();
 
-  const dog = new Image();
-  dog.src = `data:image/png;base64,${dogSpriteBase64.trim()}`;
+  // The previous implementation attempted to draw a base64 encoded sprite
+  // which was effectively a transparent pixel, making the player invisible.
+  // Instead, we render the player as a simple colored square.
 
   const scoreElement = document.getElementById('score');
   scoreElement.textContent = '0.00';
@@ -89,7 +90,8 @@ export function startGame() {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(dog, 50, canvas.height - DOG_HEIGHT - y, DOG_WIDTH, DOG_HEIGHT);
+    ctx.fillStyle = PLAYER_COLOR;
+    ctx.fillRect(50, canvas.height - DOG_HEIGHT - y, DOG_WIDTH, DOG_HEIGHT);
     obstacles.forEach((obstacle) => obstacle.draw(ctx, canvas.height));
 
     if (!gameOver) {

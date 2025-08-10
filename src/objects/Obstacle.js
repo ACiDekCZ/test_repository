@@ -11,8 +11,12 @@ export default class Obstacle {
   }
 
   draw(ctx, canvasHeight) {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(this.x, canvasHeight - this.height, this.width, this.height);
+    const y = canvasHeight - this.height;
+    ctx.fillStyle = '#556b2f';
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.fillRect(this.x, y, this.width, this.height);
+    ctx.strokeRect(this.x, y, this.width, this.height);
   }
 
   isOffScreen() {

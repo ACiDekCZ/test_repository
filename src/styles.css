@@ -13,7 +13,7 @@ body, html {
 #gameCanvas {
   display: block;
   margin: 0 auto;
-  background: #ffffff;
+  background: linear-gradient(to bottom, #87ceeb 0%, #87ceeb 70%, #f4a460 70%, #f4a460 100%);
   width: 100vw;
   height: 60vh;
 }
