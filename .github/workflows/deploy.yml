@@ -1,4 +1,4 @@
-name: Deploy README to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -19,13 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Prepare README site
-        run: |
-          mkdir -p public
-          cp README.md public/index.md
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      # - run: npm test   # vypni, pokud nemáš testy
+      - run: npm run build   # tohle musí vyrobit public/index.html + bundle.js
+
+      - run: touch public/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: public
 
   deploy:
     needs: build
