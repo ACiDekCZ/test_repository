@@ -9,6 +9,8 @@ const OBSTACLE_MIN_HEIGHT = 20;
 const OBSTACLE_MAX_HEIGHT = 120;
 const OBSTACLE_MIN_GAP = 1500;
 const OBSTACLE_MAX_GAP = 3000;
+const DOG_WIDTH = 50;
+const DOG_HEIGHT = 50;
 
 export function startGame() {
   const dog = new Image();
@@ -16,8 +18,14 @@ export function startGame() {
   dog.style.position = 'absolute';
   dog.style.left = '50px';
   dog.style.bottom = '0px';
+  dog.style.width = `${DOG_WIDTH}px`;
+  dog.style.height = `${DOG_HEIGHT}px`;
   document.body.appendChild(dog);
 
+  const scoreElement = document.getElementById('score');
+  scoreElement.textContent = '0.00';
+  const startTime = Date.now();
+  let gameOver = false;
   let velocity = 0;
   let y = 0;
   let onGround = true;
@@ -34,6 +42,8 @@ export function startGame() {
 
   function update() {
     const now = Date.now();
+    const elapsed = (now - startTime) / 1000;
+    scoreElement.textContent = elapsed.toFixed(2);
     if (now - lastObstacleTime > nextObstacleTime) {
       spawnObstacle();
       lastObstacleTime = now;
@@ -49,6 +59,26 @@ export function startGame() {
       return true;
     });
 
+    const dogBounds = {
+      left: parseInt(dog.style.left, 10),
+      right: parseInt(dog.style.left, 10) + DOG_WIDTH,
+      bottom: y,
+      top: y + DOG_HEIGHT,
+    };
+
+    for (const obstacle of obstacles) {
+      const ob = obstacle.getBounds();
+      if (
+        dogBounds.right > ob.left &&
+        dogBounds.left < ob.right &&
+        dogBounds.top > ob.bottom &&
+        dogBounds.bottom < ob.top
+      ) {
+        endGame();
+        return;
+      }
+    }
+
     if (!onGround) {
       velocity -= GRAVITY;
       y += velocity;
@@ -59,7 +89,9 @@ export function startGame() {
       }
       dog.style.bottom = `${y}px`;
     }
-    requestAnimationFrame(update);
+    if (!gameOver) {
+      requestAnimationFrame(update);
+    }
   }
 
   function jump() {
@@ -69,6 +101,24 @@ export function startGame() {
     velocity = JUMP_VELOCITY;
     onGround = false;
     lastJumpTime = now;
+  }
+
+  function endGame() {
+    gameOver = true;
+    window.removeEventListener('pointerdown', jump);
+    const finalScore = scoreElement.textContent;
+    const overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.top = '50%';
+    overlay.style.left = '50%';
+    overlay.style.transform = 'translate(-50%, -50%)';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.color = 'white';
+    overlay.style.padding = '20px';
+    overlay.style.fontFamily = 'sans-serif';
+    overlay.style.fontSize = '24px';
+    overlay.textContent = `Game Over! Final Score: ${finalScore}s`;
+    document.body.appendChild(overlay);
   }
 
   window.addEventListener('pointerdown', jump);
