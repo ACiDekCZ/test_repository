@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack serve --mode development --config webpack.config.js",
-    "build": "webpack --mode production --config webpack.config.js",
+    "build": "webpack --mode production --config webpack.config.js && node scripts/compress-assets.js",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "devDependencies": {

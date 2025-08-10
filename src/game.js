@@ -1,4 +1,3 @@
-import dogSpriteBase64 from '../assets/images/dog_sprite.base64';
 import Obstacle from './objects/Obstacle';
 
 const GRAVITY = 0.5;
@@ -12,7 +11,7 @@ const OBSTACLE_MAX_GAP = 3000;
 const DOG_WIDTH = 50;
 const DOG_HEIGHT = 50;
 
-export function startGame() {
+export function startGame(assets) {
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
@@ -24,8 +23,8 @@ export function startGame() {
   window.addEventListener('orientationchange', resizeCanvas);
   resizeCanvas();
 
-  const dog = new Image();
-  dog.src = `data:image/png;base64,${dogSpriteBase64.trim()}`;
+  const dog = assets.images.dog;
+  const jumpSound = assets.audios.jump;
 
   const scoreElement = document.getElementById('score');
   scoreElement.textContent = '0.00';
@@ -45,7 +44,13 @@ export function startGame() {
     obstacles.push(obstacle);
   }
 
-  function update() {
+  let lastFrameTime = 0;
+  function update(timestamp) {
+    if (timestamp - lastFrameTime < 1000 / 60) {
+      requestAnimationFrame(update);
+      return;
+    }
+    lastFrameTime = timestamp;
     const now = Date.now();
     const elapsed = (now - startTime) / 1000;
     scoreElement.textContent = elapsed.toFixed(2);
@@ -104,6 +109,10 @@ export function startGame() {
     velocity = JUMP_VELOCITY;
     onGround = false;
     lastJumpTime = now;
+    if (jumpSound) {
+      jumpSound.currentTime = 0;
+      jumpSound.play();
+    }
   }
 
   function endGame() {
