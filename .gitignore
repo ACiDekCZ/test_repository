@@ -1,4 +1,5 @@
 node_modules/
 public/bundle.js
 public/assets/
+public/styles.css
 assets/images/dog_sprite.png

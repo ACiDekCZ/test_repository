@@ -13,14 +13,19 @@ const DOG_WIDTH = 50;
 const DOG_HEIGHT = 50;
 
 export function startGame() {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('orientationchange', resizeCanvas);
+  resizeCanvas();
+
   const dog = new Image();
   dog.src = `data:image/png;base64,${dogSpriteBase64.trim()}`;
-  dog.style.position = 'absolute';
-  dog.style.left = '50px';
-  dog.style.bottom = '0px';
-  dog.style.width = `${DOG_WIDTH}px`;
-  dog.style.height = `${DOG_HEIGHT}px`;
-  document.body.appendChild(dog);
 
   const scoreElement = document.getElementById('score');
   scoreElement.textContent = '0.00';
@@ -36,7 +41,7 @@ export function startGame() {
 
   function spawnObstacle() {
     const height = randomRange(OBSTACLE_MIN_HEIGHT, OBSTACLE_MAX_HEIGHT);
-    const obstacle = new Obstacle(height, OBSTACLE_SPEED);
+    const obstacle = new Obstacle(height, OBSTACLE_SPEED, canvas);
     obstacles.push(obstacle);
   }
 
@@ -51,17 +56,11 @@ export function startGame() {
     }
 
     obstacles.forEach((obstacle) => obstacle.update());
-    obstacles = obstacles.filter((obstacle) => {
-      if (obstacle.isOffScreen()) {
-        obstacle.remove();
-        return false;
-      }
-      return true;
-    });
+    obstacles = obstacles.filter((obstacle) => !obstacle.isOffScreen());
 
     const dogBounds = {
-      left: parseInt(dog.style.left, 10),
-      right: parseInt(dog.style.left, 10) + DOG_WIDTH,
+      left: 50,
+      right: 50 + DOG_WIDTH,
       bottom: y,
       top: y + DOG_HEIGHT,
     };
@@ -87,8 +86,12 @@ export function startGame() {
         velocity = 0;
         onGround = true;
       }
-      dog.style.bottom = `${y}px`;
     }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(dog, 50, canvas.height - DOG_HEIGHT - y, DOG_WIDTH, DOG_HEIGHT);
+    obstacles.forEach((obstacle) => obstacle.draw(ctx, canvas.height));
+
     if (!gameOver) {
       requestAnimationFrame(update);
     }
@@ -105,7 +108,7 @@ export function startGame() {
 
   function endGame() {
     gameOver = true;
-    window.removeEventListener('pointerdown', jump);
+    canvas.removeEventListener('pointerdown', jump);
     const finalScore = scoreElement.textContent;
     const overlay = document.createElement('div');
     overlay.style.position = 'absolute';
@@ -121,7 +124,7 @@ export function startGame() {
     document.body.appendChild(overlay);
   }
 
-  window.addEventListener('pointerdown', jump);
+  canvas.addEventListener('pointerdown', jump);
   requestAnimationFrame(update);
 }
 
